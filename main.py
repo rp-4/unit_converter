@@ -7,20 +7,14 @@ Change Log: Please refer to Version.md file
 """
 
 import customtkinter
-import pathlib
 from customtkinter import CTkFrame as Frame
-from CTkMessagebox import CTkMessagebox as ctkmsg
-from PIL import Image
-from pdf2image import convert_from_path
-import sys
 import webbrowser
 import inspect
-import os
 import re
+import os
+import pyperclip
 
 # import local files
-import check_active
-import tess_convert
 from _logging import _log
 
 
@@ -31,7 +25,7 @@ class App(customtkinter.CTk):
         customtkinter.set_appearance_mode("dark")  # Modes: "System" (standard), "Dark", "Light"
         customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
         
-        self.width = 300
+        self.width = 350
         self.height = 350
         
         self.geometry(f"{self.width}x{self.height}")
@@ -55,7 +49,7 @@ class App(customtkinter.CTk):
 
         ''' first frame where label goes '''
         self.frame_01 = Frame(master=self.frame_0, fg_color='transparent', width=400, height=100)
-        self.frame_01.pack(padx=(10,10), pady=(10,0),side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+        self.frame_01.pack(padx=(0,10), pady=(10,0),side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
         ''' frame for input box '''
         self.frame_02 = Frame(master=self.frame_0, fg_color='transparent', width=400, height=40)
@@ -65,13 +59,17 @@ class App(customtkinter.CTk):
         self.frame_03 = Frame(master=self.frame_0, fg_color='transparent', width=400, height=40)
         self.frame_03.pack(padx=(10,10), pady=(10,5), expand=True, fill=customtkinter.BOTH)
 
+        ''' frame for output '''
+        self.frame_04 = Frame(master=self.frame_0, fg_color='transparent', width=200, height=40)
+        self.frame_04.pack(padx=(0,10), pady=(5,5), expand=True, fill=customtkinter.BOTH)
+
         ''' frame for inch output '''
-        self.frame_04 = Frame(master=self.frame_0, fg_color='transparent', width=400, height=40)
-        self.frame_04.pack(padx=(10,10), pady=(5,5), expand=True, fill=customtkinter.BOTH)
+        self.frame_041 = Frame(master=self.frame_04, fg_color='transparent', width=400, height=40)
+        self.frame_041.pack(padx=(10,10), pady=(5,5), expand=True, fill=customtkinter.BOTH)
 
         ''' frame for mm output '''
-        self.frame_05 = Frame(master=self.frame_0, fg_color='transparent', width=400, height=40)
-        self.frame_05.pack(padx=(10,10), pady=(5,5), expand=True, fill=customtkinter.BOTH)
+        self.frame_042 = Frame(master=self.frame_04, fg_color='transparent', width=400, height=40)
+        self.frame_042.pack(padx=(10,10), pady=(5,5), expand=True, fill=customtkinter.BOTH)
 
      
 
@@ -88,7 +86,7 @@ class App(customtkinter.CTk):
 
         
         ''' convert button '''
-        self.convert_btn = customtkinter.CTkButton(master=self.frame_03, text="Convert", command=self.convert_unit, 
+        self.convert_btn = customtkinter.CTkButton(master=self.frame_03, text="Convert", command=lambda: self.convert_unit(event='e'), 
                                                    width=150, height=40, font=("", 30))
         self.convert_btn.pack(padx=(0,5), pady=(5,5), side=customtkinter.LEFT)
 
@@ -97,72 +95,50 @@ class App(customtkinter.CTk):
                                                      width=150, height=40, font=("", 30))
         self.clear_text_bn.pack(padx=(5,0), pady=(5,5), side=customtkinter.RIGHT)
 
+        ''' inch copy button '''
+        self.inch_cpy_bn = customtkinter.CTkButton(master=self.frame_041, text="Copy", 
+                                                   command=lambda: self.copy_to_clipboard(unit = "inch"), 
+                                                     width=50, height=30, font=("", 20))
+        self.inch_cpy_bn.pack(padx=(5,0), pady=(5,5), side=customtkinter.RIGHT)
+
+        ''' mm copy button '''
+        self.mm_cpy_bn = customtkinter.CTkButton(master=self.frame_042, text="Copy", 
+                                                 command=lambda: self.copy_to_clipboard(unit = "mm"), 
+                                                     width=50, height=30, font=("", 20))
+        self.mm_cpy_bn.pack(padx=(5,0), pady=(5,5), side=customtkinter.RIGHT)
+
 
         ''' input label declaration '''
-        self.inch_lbl = customtkinter.CTkLabel(master=self.frame_04, text="inch:", text_color = "Gray", font=("",30))
-        self.inch_lbl.pack(padx=(10,10), pady=(0,0), side=customtkinter.LEFT,)
+        self.inch_lbl = customtkinter.CTkLabel(master=self.frame_041, text="in:", text_color = "Gray", font=("",30))
+        self.inch_lbl.pack(padx=(0,5), pady=(0,0), side=customtkinter.LEFT,)
 
-        self.inch_op = customtkinter.CTkLabel(master=self.frame_04, text="0", text_color = "white", font=("",30))
-        self.inch_op.pack(padx=(10,10), pady=(0,0), side=customtkinter.LEFT,)
+        self.inch_op = customtkinter.CTkLabel(master=self.frame_041, text="0", text_color = "white", font=("",30))
+        self.inch_op.pack(padx=(0,5), pady=(0,0), side=customtkinter.LEFT,)
  
 
-        self.mm_lbl = customtkinter.CTkLabel(master=self.frame_05, text="mm:", text_color = "Gray", font=("",30))
-        self.mm_lbl.pack(padx=(10,10), pady=(0,0), side=customtkinter.LEFT,)
+        self.mm_lbl = customtkinter.CTkLabel(master=self.frame_042, text="mm:", text_color = "Gray", font=("",30))
+        self.mm_lbl.pack(padx=(0,5), pady=(0,0), side=customtkinter.LEFT,)
 
-        self.mm_op = customtkinter.CTkLabel(master=self.frame_05, text="0", text_color = "white", font=("",30))
-        self.mm_op.pack(padx=(10,10), pady=(0,0), side=customtkinter.LEFT,)
+        self.mm_op = customtkinter.CTkLabel(master=self.frame_042, text="0", text_color = "white", font=("",30))
+        self.mm_op.pack(padx=(0,5), pady=(0,0), side=customtkinter.LEFT,)
 
-            
-        # info_lbl = customtkinter.CTkLabel(master=self.frame_11, text="Grabbed text", justify=customtkinter.CENTER)
-        # info_lbl.pack(padx=(10,10), pady=(5,5), side=customtkinter.LEFT,)
 
-        # self.textbox = customtkinter.CTkTextbox(master=self.frame_12, corner_radius=5)
-        # self.textbox.pack(padx=(0,0), pady=(0,0), expand=True, fill=customtkinter.BOTH)
-        # #self.textbox.insert("0.0", "Some example text!\n" * 50)
-
-        
-
-        # self.copy_text_bn = customtkinter.CTkButton(master=self.frame_13, text="Copy All", command=self.button_click, width=100)
-        # self.copy_text_bn.pack(padx=(10,10), pady=(5,5), side=customtkinter.RIGHT,)
-
+        '''' developer's note '''
         self.madeBy = customtkinter.CTkLabel(master=self, text="Developed by Rinkesh Patel with 💙 for you !!")
         self.madeBy.grid(row=10, column=0, columnspan=4, pady=5)
 
         self.madeBy.bind("<Button-1>", lambda e: self.openWebsite("https://rinkeshpatel.com/"))
 
-        # self.copy_text_bn.configure(state = "disabled")
 
-        #self.update()
-        #self.win_size = self.winfo_height()
-        #self.win_size = 0
-        
-        #self.bind("<Expose event x=0 y=0 width=1000 height=700>", self.catch_win_size)
-        #self.bind("<Visibility>", self.catch_win_size)
-        #self.bind("<Configure>", self.catch_win_size)
-        # self.bind("<Map>", self.catch_maximize)
-
+        ''' binding input box to enter key '''
         self.input_box.bind('<Return>', self.convert_unit)
 
     
     ''' validate the entry to make sure it is numbers '''
     def only_numbers(self, char):
-        # return char.isfloat()
-        # if char == "":
-        #     return True  # Allow backspace/delete
-        # if char.isdigit():
-        #     return True
-        # elif char == ".":
-        #     if "." in self.input.get():
-        #         return False
-        #     return True
-        # return False
-
         if char == "":
             return True
-
-        # Regex to allow optional digits, optional one dot, and optional more digits
         pattern = r'^\d*\.?\d*$'
-
         return re.match(pattern, char) is not None
         
 
@@ -172,11 +148,23 @@ class App(customtkinter.CTk):
 
 
     def convert_unit(self, event):
-        print("button click")
+        _log("i", f"IN: {inspect.stack()[0][3]}: Unit conversion by enter key")
         input_number = float(self.input_box.get())
-        inch_op = round(input_number / 25.4, 4)
-        mm_op = round(input_number * 25.4, 4)
-        self.op_numbers(inch=inch_op, mm=mm_op)
+        self.inch_op_number = round(input_number / 25.4, 4)
+        self.mm_op_number = round(input_number * 25.4, 4)
+        self.op_numbers(inch=self.inch_op_number, mm=self.mm_op_number)
+
+    def convert_unit_btn(self):
+        _log("i", f"IN: {inspect.stack()[0][3]}: Unit conversion by button")
+        self.convert_unit(event='e')
+
+
+    def copy_to_clipboard(self, unit):
+        if unit == "inch":
+            pyperclip.copy(self.inch_op_number)
+        elif unit == "mm":
+            pyperclip.copy(self.mm_op_number)
+
 
 
     
@@ -194,6 +182,5 @@ class App(customtkinter.CTk):
     
 if __name__ == "__main__":
     _log("i", "\nSoftware initiated.............................................")
-
     app = App()
     app.mainloop()

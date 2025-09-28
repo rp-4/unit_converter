@@ -1,6 +1,6 @@
-Unit Converter Commit 1:
+Unit Converter Commit 1 (Version: 1.0.0):
     - Initial Commit
 
-Unit Converter Commit 2:
+Unit Converter Commit 2 (Version: 1.0.0):
     - Features:
-        - 
+        - Copy button added for both units, so user can copy converted number to clipboard
