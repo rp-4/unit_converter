@@ -25,4 +25,7 @@ Unit Converter Commit 6 (Version: 1.0.0):
         - Added Symmetry and Bilateral selection radio buttons
         - User can select either Symmetry or Bilateral tolerance
         - Minus tolerance will be disabled when Symmetry will be selected and Plus tolerance will be consider for both Min and Max conditon
+
+Unit Converter Commit 7 (Version: 1.0.0):
+    - Minor Readme file issue was fixed (the image link was broken)
     
