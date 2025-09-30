@@ -18,4 +18,11 @@ Unit Converter Commit 5 (Version: 1.0.0):
     - Minor UI changes to accomodate tabs 
     - Features:
         - Add a 'Stackup calculator' in a new tab
+
+Unit Converter Commit 6 (Version: 1.0.0):
+    - Features:
+        - Update UI for tolerance stackup calculator
+        - Added Symmetry and Bilateral selection radio buttons
+        - User can select either Symmetry or Bilateral tolerance
+        - Minus tolerance will be disabled when Symmetry will be selected and Plus tolerance will be consider for both Min and Max conditon
     

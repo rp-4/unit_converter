@@ -69,27 +69,37 @@ class MyTabView(customtkinter.CTkTabview):
         self.frame_t2_0.pack(padx=(10,10), pady=(10,0), side=customtkinter.TOP, expand=True, fill=customtkinter.BOTH)
 
 
-        ''' first frame where input box goes '''
+        ''' first frame where Nominal input box goes '''
         self.frame_t2_01 = Frame(master=self.frame_t2_0, fg_color='transparent', height=50)
         self.frame_t2_01.pack(padx=(0,0), pady=(0,5), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
 
-        ''' frame for tolerance input box '''
+        ''' frame for Tolerance Selector '''
         self.frame_t2_02 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
-        self.frame_t2_02.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+        self.frame_t2_02.pack(side="top", pady=10)
 
 
-        ''' frame for generate button '''
+        ''' frame for + Tolerance input box '''
         self.frame_t2_03 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
-        self.frame_t2_03.pack(padx=(0,0), pady=(15,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+        self.frame_t2_03.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
-        ''' frame for MMC tolerance result '''
+
+        ''' frame for - Tolerance input box '''
         self.frame_t2_04 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
         self.frame_t2_04.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
-        ''' frame for LMC tolerance result '''
+
+        ''' frame for generate button '''
         self.frame_t2_05 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
-        self.frame_t2_05.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+        self.frame_t2_05.pack(padx=(0,0), pady=(15,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+        ''' frame for MMC tolerance result '''
+        self.frame_t2_06 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
+        self.frame_t2_06.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+        ''' frame for LMC tolerance result '''
+        self.frame_t2_07 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
+        self.frame_t2_07.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
  
 
 
@@ -97,52 +107,102 @@ class MyTabView(customtkinter.CTkTabview):
 
         ''' tab 2 contetns '''
         ''' inputs for nominals '''
-        self.input_1_box = customtkinter.StringVar()
-        self.input_1_box = customtkinter.CTkEntry(master=self.frame_t2_01, 
-                                                corner_radius=5, height=30, font=("",30), 
-                                                validate="key", validatecommand= (validation_command,'%P'))
-        self.input_1_box.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+        self.nominal_lbl = customtkinter.CTkLabel(master=self.frame_t2_01, text="NOML", text_color = "Gray", font=("",20))
+        self.nominal_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.input_2_box = customtkinter.StringVar()
-        self.input_2_box = customtkinter.CTkEntry(master=self.frame_t2_01, 
+        self.nominal_1_box = customtkinter.StringVar()
+        self.nominal_1_box = customtkinter.CTkEntry(master=self.frame_t2_01, border_color = "#3D839F",
                                                 corner_radius=5, height=30, font=("",30), 
                                                 validate="key", validatecommand= (validation_command,'%P'))
-        self.input_2_box.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+        self.nominal_1_box.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
 
-        ''' input for tolerances '''
-        self.input_tol_1_box = customtkinter.StringVar()
-        self.input_tol_1_box = customtkinter.CTkEntry(master=self.frame_t2_02, 
+        self.nominal_2_box = customtkinter.StringVar()
+        self.nominal_2_box = customtkinter.CTkEntry(master=self.frame_t2_01, border_color = "#3D839F",
                                                 corner_radius=5, height=30, font=("",30), 
                                                 validate="key", validatecommand= (validation_command,'%P'))
-        self.input_tol_1_box.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+        self.nominal_2_box.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
 
-        self.input_tol_2_box = customtkinter.StringVar()
-        self.input_tol_2_box = customtkinter.CTkEntry(master=self.frame_t2_02, 
+
+        ''' Tolerance type selector '''
+        self.tol_selector_var = customtkinter.IntVar(value=0)
+        self.tol_selector_sym = customtkinter.CTkRadioButton(master=self.frame_t2_02, text="Symmetry",
+                                                             command=self.selected_tolerance, variable= self.tol_selector_var, value=1)
+
+        self.tol_selector_bil = customtkinter.CTkRadioButton(master=self.frame_t2_02, text="Bilateral",
+                                                             command=self.selected_tolerance, variable= self.tol_selector_var, value=2)
+        self.tol_selector_sym.pack(in_=self.frame_t2_02, side="left", padx=5, pady=0)
+        self.tol_selector_bil.pack(in_=self.frame_t2_02, side="left", padx=5, pady=0)
+        self.tol_selector_sym.select()
+
+
+
+        ''' input for + Tolerances '''
+        self.plus_tolerance_lbl = customtkinter.CTkLabel(master=self.frame_t2_03, text="+TOL", text_color = "Gray", font=("",20))
+        self.plus_tolerance_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.input_plus_tol_1 = customtkinter.StringVar()
+        self.input_plus_tol_1 = customtkinter.CTkEntry(master=self.frame_t2_03, placeholder_text= 0,  border_color = "green",
                                                 corner_radius=5, height=30, font=("",30), 
                                                 validate="key", validatecommand= (validation_command,'%P'))
-        self.input_tol_2_box.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+        self.input_plus_tol_1.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+
+        self.input_plus_tol_2 = customtkinter.StringVar()
+        self.input_plus_tol_2 = customtkinter.CTkEntry(master=self.frame_t2_03, placeholder_text= 0, border_color = "green",
+                                                corner_radius=5, height=30, font=("",30), 
+                                                validate="key", validatecommand= (validation_command,'%P'))
+        self.input_plus_tol_2.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+
+
+        ''' input for - Tolerances '''
+        self.min_tolerance_lbl = customtkinter.CTkLabel(master=self.frame_t2_04, text="-TOL", text_color = "Gray", font=("",20))
+        self.min_tolerance_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.input_min_tol_1 = customtkinter.StringVar()
+        self.input_min_tol_1 = customtkinter.CTkEntry(master=self.frame_t2_04, placeholder_text= 0, border_color = "#913030",
+                                                corner_radius=5, height=30, font=("",30), 
+                                                validate="key", validatecommand= (validation_command,'%P'))
+        self.input_min_tol_1.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+
+        self.input_min_tol_2 = customtkinter.StringVar()
+        self.input_min_tol_2 = customtkinter.CTkEntry(master=self.frame_t2_04, placeholder_text= 0, border_color = "#913030",
+                                                corner_radius=5, height=30, font=("",30), 
+                                                validate="key", validatecommand= (validation_command,'%P'))
+        self.input_min_tol_2.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+
+        ''' disabling both - tolerances for symmetry tolerance '''
+        self.input_min_tol_1.configure(state = "disabled")
+        self.input_min_tol_2.configure(state = "disabled")
 
 
         ''' generat button for tolerances '''
-        self.generate_bn = customtkinter.CTkButton(master=self.frame_t2_03, text="Calculate", 
-                                                 command=lambda: self.copy_to_clipboard(unit = "mm"), 
+        self.generate_bn = customtkinter.CTkButton(master=self.frame_t2_05, text="Generate", 
+                                                 command=lambda: self.tol_calculations(), 
                                                      width=50, height=30, font=("", 20))
         self.generate_bn.pack(side="left", expand=True, padx=(0,5), pady=0, fill=customtkinter.Y)
 
 
-        ''' MMC tolerance result '''
-        self.mmc_1_op = customtkinter.CTkLabel(master=self.frame_t2_04, text="MMC", text_color = "Gray", font=("",30))
-        self.mmc_1_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        ''' Max tolerance result '''
+        self.max_lbl = customtkinter.CTkLabel(master=self.frame_t2_06, text="MAX", text_color = "Gray", font=("",20))
+        self.max_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.mmc_2_op = customtkinter.CTkLabel(master=self.frame_t2_04, text="MMC", text_color = "Gray", font=("",30))
-        self.mmc_2_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        self.max_1_op = customtkinter.CTkLabel(master=self.frame_t2_06, text=0, text_color = "Gray", font=("",30))
+        self.max_1_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        ''' LMC tolerance result '''
-        self.lmc_1_op = customtkinter.CTkLabel(master=self.frame_t2_05, text="LMC", text_color = "Gray", font=("",30))
-        self.lmc_1_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        self.max_2_op = customtkinter.CTkLabel(master=self.frame_t2_06, text=0, text_color = "Gray", font=("",30))
+        self.max_2_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.lmc_2_op = customtkinter.CTkLabel(master=self.frame_t2_05, text="LMC", text_color = "Gray", font=("",30))
-        self.lmc_2_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        ''' Min tolerance result '''
+        self.min_lbl = customtkinter.CTkLabel(master=self.frame_t2_07, text="MIN", text_color = "Gray", font=("",20))
+        self.min_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.min_1_op = customtkinter.CTkLabel(master=self.frame_t2_07, text=0, text_color = "Gray", font=("",30))
+        self.min_1_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.min_2_op = customtkinter.CTkLabel(master=self.frame_t2_07, text=0, text_color = "Gray", font=("",30))
+        self.min_2_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+
 
 
 #####################################################################################################################################
@@ -207,6 +267,14 @@ class MyTabView(customtkinter.CTkTabview):
         ''' declaring global variables '''
         self.inch_op_number = 0
         self.mm_op_number = 0
+    
+        self.initial_setting()
+    
+    ''' initially setting default values '''
+    def initial_setting(self):
+        print("initial settings")
+        # self.input_plus_tol_1.insert(0, string=0)
+        # # self.input_plus_tol_2.insert((0, "0"))
 
     
     ''' validate the entry to make sure it is numbers '''
@@ -216,6 +284,108 @@ class MyTabView(customtkinter.CTkTabview):
         pattern = r'^\d*\.?\d*$'
         return re.match(pattern, char) is not None
 
+
+    def selected_tolerance(self):
+        print(self.tol_selector_var.get())
+        if self.tol_selector_var.get() == 1:
+            self.input_min_tol_1.configure(state="disabled", border_color = "#913030")
+            self.input_min_tol_2.configure(state="disabled", border_color = "#913030")
+        elif self.tol_selector_var.get() == 2:
+            self.input_min_tol_1.configure(state="normal", border_color = "green")
+            self.input_min_tol_2.configure(state="normal", border_color = "green")
+
+
+    def tol_calculations(self):
+
+        # print(self.input_plus_tol_1.get(), type(self.input_plus_tol_1.get()))
+        # enter 0 initially to tolerance input boxes  
+        # check if it is symmetry or biletaral tolerance and then proceed 
+        if self.tol_selector_var.get() == 1:
+            self.get_values(tol_type=1)
+            self.sym_tol_calculations()
+        elif self.tol_selector_var.get() == 2:
+            self.get_values(tol_type=2)
+            self.bi_tol_calculations()
+
+    def get_values(self, tol_type):
+        try:
+            self.nominal_1 = float(self.nominal_1_box.get())
+        except ValueError as e:
+            # show error message
+            self.nominal_1 = 0
+
+        try:
+            self.nominal_2 = float(self.nominal_2_box.get())
+        except ValueError as e:
+            # show error message
+            self.nominal_2 = 0
+        
+        
+        try:
+            self.plus_tol_1 = float(self.input_plus_tol_1.get())
+        except ValueError as e:
+            # show error message
+            self.plus_tol_1 = 0
+
+        try:
+            self.plus_tol_2 = float(self.input_plus_tol_2.get())
+        except ValueError as e:
+            # show error message
+            self.plus_tol_2 = 0
+
+        if tol_type == 2:
+            try:
+                self.min_tol_1 = float(self.input_min_tol_1.get())
+            except ValueError as e:
+                # show error message
+                self.min_tol_1 = 0
+
+            try:
+                self.min_tol_2 = float(self.input_min_tol_2.get())
+            except ValueError as e:
+                # show error message
+                self.min_tol_2 = 0       
+
+    
+    def bi_tol_calculations(self):
+
+        # print(self.input_plus_tol_1.get(), type(self.input_plus_tol_1.get()))
+
+        self.max_1_val = self.nominal_1 + self.plus_tol_1
+        self.max_2_val = self.nominal_2 + self.plus_tol_2
+
+        self.min_1_val = self.nominal_1 - self.min_tol_1
+        self.min_2_val = self.nominal_2 - self.min_tol_2
+
+        print("MAX_1", self.max_1_val)
+        print("MAX_2", self.max_2_val)
+
+        print("MIN_1", self.min_1_val)
+        print("MIN_2", self.min_2_val)
+
+    
+    def sym_tol_calculations(self):
+
+        # print(self.input_plus_tol_1.get(), type(self.input_plus_tol_1.get()))
+
+        self.max_1_val = self.nominal_1 + self.plus_tol_1
+        self.max_2_val = self.nominal_2 + self.plus_tol_2
+
+        self.min_1_val = self.nominal_1 - self.plus_tol_1
+        self.min_2_val = self.nominal_2 - self.plus_tol_2
+
+        print("SYM MAX_1", self.max_1_val)
+        print("SYM MAX_2", self.max_2_val)
+
+        print("SYM MIN_1", self.min_1_val)
+        print("SYM MIN_2", self.min_2_val)
+
+        
+
+
+        
+        
+            
 
     def convert_unit(self, event):
         _log("i", f"IN: {inspect.stack()[0][3]}: Unit conversion by enter key")
@@ -258,7 +428,7 @@ class App(customtkinter.CTk):
         customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
         self.width = 400
-        self.height = 400
+        self.height = 450
         
         self.geometry(f"{self.width}x{self.height}")
         self.minsize(self.width, self.height)
