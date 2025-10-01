@@ -28,4 +28,13 @@ Unit Converter Commit 6 (Version: 1.0.0):
 
 Unit Converter Commit 7 (Version: 1.0.0):
     - Minor Readme file issue was fixed (the image link was broken)
+
+Unit Converter Commit 9 (Version: 1.0.0):
+    - Minor changes
+        - Changed some variable names for easy understanding
+        - Changed order of nominal value entry—the first nominal input box is for Hole, and the next one is for Shaft
+    - Features:
+        - Added MAX & MIN condition calculations
+        - Added UI & code for clearance when both hole & shaft are at MMC and LMC
+        - If there is interference at MMC, the font will be red; otherwise, it will be green
     

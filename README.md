@@ -8,13 +8,22 @@ Unit converter for general purpose
 
 <br>
 
-![alt text](misc/image_01.png) 
+![alt text](misc/image_04.png) 
 
 <br> 
 
-![alt text](misc/image_02.png)
+![alt text](misc/image_05.png)
 
 <br>
 
-![alt text](misc/image_03.png)
+![alt text](misc/image_06.png)
+
+<br>
+
+![alt text](misc/image_07.png)
+
+<br>
+
+![alt text](misc/image_08.png)
+
 

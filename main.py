@@ -13,6 +13,7 @@ import inspect
 import re
 import os
 import pyperclip
+from CTkToolTip import *
 
 # import local files
 from _logging import _log
@@ -93,13 +94,21 @@ class MyTabView(customtkinter.CTkTabview):
         self.frame_t2_05 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
         self.frame_t2_05.pack(padx=(0,0), pady=(15,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
-        ''' frame for MMC tolerance result '''
+        ''' frame for Max tolerance result '''
         self.frame_t2_06 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
-        self.frame_t2_06.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+        self.frame_t2_06.pack(padx=(0,0), pady=(15,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
-        ''' frame for LMC tolerance result '''
+        ''' frame for Min tolerance result '''
         self.frame_t2_07 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
         self.frame_t2_07.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+        ''' frame for Gap when Both @ MMC tolerance result '''
+        self.frame_t2_08 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
+        self.frame_t2_08.pack(padx=(0,0), pady=(15,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+        ''' frame for Gap when Both @ LMC tolerance result '''
+        self.frame_t2_09 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
+        self.frame_t2_09.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
  
 
 
@@ -110,17 +119,22 @@ class MyTabView(customtkinter.CTkTabview):
         self.nominal_lbl = customtkinter.CTkLabel(master=self.frame_t2_01, text="NOML", text_color = "Gray", font=("",20))
         self.nominal_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.nominal_1_box = customtkinter.StringVar()
-        self.nominal_1_box = customtkinter.CTkEntry(master=self.frame_t2_01, border_color = "#3D839F",
-                                                corner_radius=5, height=30, font=("",30), 
-                                                validate="key", validatecommand= (validation_command,'%P'))
-        self.nominal_1_box.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
 
-        self.nominal_2_box = customtkinter.StringVar()
-        self.nominal_2_box = customtkinter.CTkEntry(master=self.frame_t2_01, border_color = "#3D839F",
+        self.hole_nominal_box = customtkinter.StringVar()
+        self.hole_nominal_box = customtkinter.CTkEntry(master=self.frame_t2_01, placeholder_text="Hole Dia", border_color = "#3D839F",
                                                 corner_radius=5, height=30, font=("",30), 
                                                 validate="key", validatecommand= (validation_command,'%P'))
-        self.nominal_2_box.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+        self.hole_nominal_box.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+        self.hole_nominal_tip = CTkToolTip(self.hole_nominal_box, delay=0.5, bg_color="#324A5E", message="Enter Hole Diameter or Slot Width")
+        self.hole_nominal_tip.attributes("-topmost", True)
+
+        self.shaft_nominal_box = customtkinter.StringVar()
+        self.shaft_nominal_box = customtkinter.CTkEntry(master=self.frame_t2_01, placeholder_text="Shaft Dia",  border_color = "#3D839F",
+                                                corner_radius=5, height=30, font=("",30), 
+                                                validate="key", validatecommand= (validation_command,'%P'))
+        self.shaft_nominal_box.pack(side="left", fill="both", expand=True, padx=(0,0), pady=0)
+        self.shaft_nominal_tip = CTkToolTip(self.shaft_nominal_box, delay=0.5, bg_color="#324A5E", message="Enter Shaft Diameter or Key Width")
+        self.shaft_nominal_tip.attributes("-topmost", True)
 
 
         ''' Tolerance type selector '''
@@ -137,47 +151,50 @@ class MyTabView(customtkinter.CTkTabview):
 
 
         ''' input for + Tolerances '''
-        self.plus_tolerance_lbl = customtkinter.CTkLabel(master=self.frame_t2_03, text="+TOL", text_color = "Gray", font=("",20))
+        self.plus_tolerance_lbl = customtkinter.CTkLabel(master=self.frame_t2_03, text="±TOL", text_color = "Gray", font=("",20))
         self.plus_tolerance_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.input_plus_tol_1 = customtkinter.StringVar()
-        self.input_plus_tol_1 = customtkinter.CTkEntry(master=self.frame_t2_03, placeholder_text= 0,  border_color = "green",
-                                                corner_radius=5, height=30, font=("",30), 
-                                                validate="key", validatecommand= (validation_command,'%P'))
-        self.input_plus_tol_1.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
 
-        self.input_plus_tol_2 = customtkinter.StringVar()
-        self.input_plus_tol_2 = customtkinter.CTkEntry(master=self.frame_t2_03, placeholder_text= 0, border_color = "green",
+        self.input_plus_tol_hole = customtkinter.StringVar()
+        self.input_plus_tol_hole = customtkinter.CTkEntry(master=self.frame_t2_03, placeholder_text= 0, border_color = "green",
                                                 corner_radius=5, height=30, font=("",30), 
                                                 validate="key", validatecommand= (validation_command,'%P'))
-        self.input_plus_tol_2.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+        self.input_plus_tol_hole.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+
+        self.input_plus_tol_shaft = customtkinter.StringVar()
+        self.input_plus_tol_shaft = customtkinter.CTkEntry(master=self.frame_t2_03, placeholder_text= 0,  border_color = "green",
+                                                corner_radius=5, height=30, font=("",30), 
+                                                validate="key", validatecommand= (validation_command,'%P'))
+        self.input_plus_tol_shaft.pack(side="left", fill="both", expand=True, padx=(0,0), pady=0)
 
 
         ''' input for - Tolerances '''
-        self.min_tolerance_lbl = customtkinter.CTkLabel(master=self.frame_t2_04, text="-TOL", text_color = "Gray", font=("",20))
+        self.min_tolerance_lbl = customtkinter.CTkLabel(master=self.frame_t2_04, text="        ", text_color = "Gray", font=("",20))
         self.min_tolerance_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.input_min_tol_1 = customtkinter.StringVar()
-        self.input_min_tol_1 = customtkinter.CTkEntry(master=self.frame_t2_04, placeholder_text= 0, border_color = "#913030",
-                                                corner_radius=5, height=30, font=("",30), 
-                                                validate="key", validatecommand= (validation_command,'%P'))
-        self.input_min_tol_1.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
 
-        self.input_min_tol_2 = customtkinter.StringVar()
-        self.input_min_tol_2 = customtkinter.CTkEntry(master=self.frame_t2_04, placeholder_text= 0, border_color = "#913030",
+        self.input_min_tol_hole = customtkinter.StringVar()
+        self.input_min_tol_hole = customtkinter.CTkEntry(master=self.frame_t2_04, placeholder_text= 0, border_color = "#913030",
                                                 corner_radius=5, height=30, font=("",30), 
                                                 validate="key", validatecommand= (validation_command,'%P'))
-        self.input_min_tol_2.pack(side="left", fill="both", expand=True, padx=(5,0), pady=0)
+        self.input_min_tol_hole.pack(side="left", fill="both", expand=True, padx=(0,5), pady=0)
+
+        self.input_min_tol_shaft = customtkinter.StringVar()
+        self.input_min_tol_shaft = customtkinter.CTkEntry(master=self.frame_t2_04, placeholder_text= 0, border_color = "#913030",
+                                                corner_radius=5, height=30, font=("",30), 
+                                                validate="key", validatecommand= (validation_command,'%P'))
+        self.input_min_tol_shaft.pack(side="left", fill="both", expand=True, padx=(0,0), pady=0)
+
 
         ''' disabling both - tolerances for symmetry tolerance '''
-        self.input_min_tol_1.configure(state = "disabled")
-        self.input_min_tol_2.configure(state = "disabled")
+        self.input_min_tol_hole.configure(state = "disabled")
+        self.input_min_tol_shaft.configure(state = "disabled")
 
 
         ''' generat button for tolerances '''
         self.generate_bn = customtkinter.CTkButton(master=self.frame_t2_05, text="Generate", 
                                                  command=lambda: self.tol_calculations(), 
-                                                     width=50, height=30, font=("", 20))
+                                                     width=50, height=30, font=("", 25))
         self.generate_bn.pack(side="left", expand=True, padx=(0,5), pady=0, fill=customtkinter.Y)
 
 
@@ -185,22 +202,38 @@ class MyTabView(customtkinter.CTkTabview):
         self.max_lbl = customtkinter.CTkLabel(master=self.frame_t2_06, text="MAX", text_color = "Gray", font=("",20))
         self.max_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.max_1_op = customtkinter.CTkLabel(master=self.frame_t2_06, text=0, text_color = "Gray", font=("",30))
-        self.max_1_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        self.max_hole_op = customtkinter.CTkLabel(master=self.frame_t2_06, text=0, text_color = "#c3c3c3", font=("",30))
+        self.max_hole_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.max_2_op = customtkinter.CTkLabel(master=self.frame_t2_06, text=0, text_color = "Gray", font=("",30))
-        self.max_2_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        self.max_shaft_op = customtkinter.CTkLabel(master=self.frame_t2_06, text=0, text_color = "#c3c3c3", font=("",30))
+        self.max_shaft_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
 
         ''' Min tolerance result '''
-        self.min_lbl = customtkinter.CTkLabel(master=self.frame_t2_07, text="MIN", text_color = "Gray", font=("",20))
+        self.min_lbl = customtkinter.CTkLabel(master=self.frame_t2_07, text="MIN", text_color = "gray", font=("",20))
         self.min_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.min_1_op = customtkinter.CTkLabel(master=self.frame_t2_07, text=0, text_color = "Gray", font=("",30))
-        self.min_1_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        self.min_hole_op = customtkinter.CTkLabel(master=self.frame_t2_07, text=0, text_color = "#c3c3c3", font=("",30))
+        self.min_hole_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
-        self.min_2_op = customtkinter.CTkLabel(master=self.frame_t2_07, text=0, text_color = "Gray", font=("",30))
-        self.min_2_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+        self.min_shaft_op = customtkinter.CTkLabel(master=self.frame_t2_07, text=0, text_color = "#c3c3c3", font=("",30))
+        self.min_shaft_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+
+        ''' Gap when both are @ MMC tolerance result '''
+        self.both_at_MMC_lbl = customtkinter.CTkLabel(master=self.frame_t2_08, text="Clearance @ MMC", text_color = "Gray", font=("",20))
+        self.both_at_MMC_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.both_at_MMC_op = customtkinter.CTkLabel(master=self.frame_t2_08, text=0, text_color = "#c3c3c3", font=("",30))
+        self.both_at_MMC_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+
+        ''' Gap when both are @ LMC tolerance result '''
+        self.both_at_LMC_lbl = customtkinter.CTkLabel(master=self.frame_t2_09, text="Clearance @ MMC", text_color = "Gray", font=("",20))
+        self.both_at_LMC_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.both_at_LMC_op = customtkinter.CTkLabel(master=self.frame_t2_09, text=0, text_color = "#c3c3c3", font=("",30))
+        self.both_at_LMC_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
 
 
@@ -273,8 +306,8 @@ class MyTabView(customtkinter.CTkTabview):
     ''' initially setting default values '''
     def initial_setting(self):
         print("initial settings")
-        # self.input_plus_tol_1.insert(0, string=0)
-        # # self.input_plus_tol_2.insert((0, "0"))
+        # self.input_plus_tol_shaft.insert(0, string=0)
+        # # self.input_plus_tol_hole.insert((0, "0"))
 
     
     ''' validate the entry to make sure it is numbers '''
@@ -286,18 +319,22 @@ class MyTabView(customtkinter.CTkTabview):
 
 
     def selected_tolerance(self):
-        print(self.tol_selector_var.get())
+
         if self.tol_selector_var.get() == 1:
-            self.input_min_tol_1.configure(state="disabled", border_color = "#913030")
-            self.input_min_tol_2.configure(state="disabled", border_color = "#913030")
+            self.plus_tolerance_lbl.configure(text="±TOL")
+            self.min_tolerance_lbl.configure(text="        ")
+            self.input_min_tol_shaft.configure(state="disabled", border_color = "#913030")
+            self.input_min_tol_hole.configure(state="disabled", border_color = "#913030")
         elif self.tol_selector_var.get() == 2:
-            self.input_min_tol_1.configure(state="normal", border_color = "green")
-            self.input_min_tol_2.configure(state="normal", border_color = "green")
+            self.plus_tolerance_lbl.configure(text="+TOL")
+            self.min_tolerance_lbl.configure(text="-TOL")
+            self.input_min_tol_shaft.configure(state="normal", border_color = "green")
+            self.input_min_tol_hole.configure(state="normal", border_color = "green")
 
 
     def tol_calculations(self):
 
-        # print(self.input_plus_tol_1.get(), type(self.input_plus_tol_1.get()))
+        # print(self.input_plus_tol_shaft.get(), type(self.input_plus_tol_shaft.get()))
         # enter 0 initially to tolerance input boxes  
         # check if it is symmetry or biletaral tolerance and then proceed 
         if self.tol_selector_var.get() == 1:
@@ -309,78 +346,116 @@ class MyTabView(customtkinter.CTkTabview):
 
     def get_values(self, tol_type):
         try:
-            self.nominal_1 = float(self.nominal_1_box.get())
+            self.shaft_nominal = float(self.shaft_nominal_box.get())
         except ValueError as e:
             # show error message
-            self.nominal_1 = 0
+            self.shaft_nominal = 0
 
         try:
-            self.nominal_2 = float(self.nominal_2_box.get())
+            self.hole_nominal = float(self.hole_nominal_box.get())
         except ValueError as e:
             # show error message
-            self.nominal_2 = 0
+            self.hole_nominal = 0
         
         
         try:
-            self.plus_tol_1 = float(self.input_plus_tol_1.get())
+            self.max_shaft = float(self.input_plus_tol_shaft.get())
         except ValueError as e:
             # show error message
-            self.plus_tol_1 = 0
+            self.max_shaft = 0
 
         try:
-            self.plus_tol_2 = float(self.input_plus_tol_2.get())
+            self.max_hole = float(self.input_plus_tol_hole.get())
         except ValueError as e:
             # show error message
-            self.plus_tol_2 = 0
+            self.max_hole = 0
 
         if tol_type == 2:
             try:
-                self.min_tol_1 = float(self.input_min_tol_1.get())
+                self.min_shaft = float(self.input_min_tol_shaft.get())
             except ValueError as e:
                 # show error message
-                self.min_tol_1 = 0
+                self.min_shaft = 0
 
             try:
-                self.min_tol_2 = float(self.input_min_tol_2.get())
+                self.min_hole = float(self.input_min_tol_hole.get())
             except ValueError as e:
                 # show error message
-                self.min_tol_2 = 0       
+                self.min_hole = 0       
 
     
     def bi_tol_calculations(self):
 
-        # print(self.input_plus_tol_1.get(), type(self.input_plus_tol_1.get()))
+        # print(self.input_plus_tol_shaft.get(), type(self.input_plus_tol_shaft.get()))
 
-        self.max_1_val = self.nominal_1 + self.plus_tol_1
-        self.max_2_val = self.nominal_2 + self.plus_tol_2
+        self.shaft_at_max = round(self.shaft_nominal + self.max_shaft, 4)
+        self.hole_at_max = round(self.hole_nominal + self.max_hole, 4)
 
-        self.min_1_val = self.nominal_1 - self.min_tol_1
-        self.min_2_val = self.nominal_2 - self.min_tol_2
+        self.shaft_at_min = round(self.shaft_nominal - self.min_shaft, 4)
+        self.hole_at_min = round(self.hole_nominal - self.min_hole, 4)
 
-        print("MAX_1", self.max_1_val)
-        print("MAX_2", self.max_2_val)
+        self.max_shaft_op.configure(text = self.shaft_at_max)
+        self.max_hole_op.configure(text = self.hole_at_max)
 
-        print("MIN_1", self.min_1_val)
-        print("MIN_2", self.min_2_val)
+        self.min_shaft_op.configure(text = self.shaft_at_min)
+        self.min_hole_op.configure(text = self.hole_at_min)
+
+        self.both_at_MMC_var = round(self.hole_at_min - self.shaft_at_max, 4)
+        self.both_at_LMC_var = round(self.hole_at_max - self.shaft_at_min, 4)
+
+        if self.both_at_MMC_var < 0:
+            self.both_at_MMC_op.configure(text = self.both_at_MMC_var, text_color = "#D60404")
+        elif self.both_at_MMC_var >= 0:
+            self.both_at_MMC_op.configure(text = self.both_at_MMC_var, text_color = "green")
+        
+        if self.both_at_LMC_var < 0:
+            self.both_at_LMC_op.configure(text = self.both_at_LMC_var, text_color = "#D60404")
+        elif self.both_at_LMC_var >= 0:
+            self.both_at_LMC_op.configure(text = self.both_at_LMC_var, text_color = "green")
+        
+        # print("MAX_1", self.shaft_at_max)
+        # print("MAX_2", self.hole_at_max)
+
+        # print("MIN_1", self.shaft_at_min)
+        # print("MIN_2", self.hole_at_min)
 
     
     def sym_tol_calculations(self):
 
-        # print(self.input_plus_tol_1.get(), type(self.input_plus_tol_1.get()))
+        # print(self.input_plus_tol_shaft.get(), type(self.input_plus_tol_shaft.get()))
 
-        self.max_1_val = self.nominal_1 + self.plus_tol_1
-        self.max_2_val = self.nominal_2 + self.plus_tol_2
+        self.shaft_at_max = round(self.shaft_nominal + self.max_shaft, 4)
+        self.hole_at_max = round(self.hole_nominal + self.max_hole, 4)
 
-        self.min_1_val = self.nominal_1 - self.plus_tol_1
-        self.min_2_val = self.nominal_2 - self.plus_tol_2
+        self.shaft_at_min = round(self.shaft_nominal - self.max_shaft, 4)
+        self.hole_at_min = round(self.hole_nominal - self.max_hole, 4)
 
-        print("SYM MAX_1", self.max_1_val)
-        print("SYM MAX_2", self.max_2_val)
+        self.max_shaft_op.configure(text = self.shaft_at_max)
+        self.max_hole_op.configure(text = self.hole_at_max)
 
-        print("SYM MIN_1", self.min_1_val)
-        print("SYM MIN_2", self.min_2_val)
+        self.min_shaft_op.configure(text = self.shaft_at_min)
+        self.min_hole_op.configure(text = self.hole_at_min)
 
+
+        self.both_at_MMC_var = round(self.hole_at_min - self.shaft_at_max, 4)
+        self.both_at_LMC_var = round(self.hole_at_max - self.shaft_at_min, 4)
+
+        if self.both_at_MMC_var < 0:
+            self.both_at_MMC_op.configure(text = self.both_at_MMC_var, text_color = "#D60404")
+        elif self.both_at_MMC_var >= 0:
+            self.both_at_MMC_op.configure(text = self.both_at_MMC_var, text_color = "green")
         
+        if self.both_at_LMC_var < 0:
+            self.both_at_LMC_op.configure(text = self.both_at_LMC_var, text_color = "#D60404")
+        elif self.both_at_LMC_var >= 0:
+            self.both_at_LMC_op.configure(text = self.both_at_LMC_var, text_color = "green")
+
+        # print("SYM MAX_1", self.shaft_at_max)
+        # print("SYM MAX_2", self.hole_at_max)
+
+        # print("SYM MIN_1", self.shaft_at_min)
+        # print("SYM MIN_2", self.hole_at_min)
+       
 
 
         
@@ -428,7 +503,7 @@ class App(customtkinter.CTk):
         customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
         self.width = 400
-        self.height = 450
+        self.height = 550
         
         self.geometry(f"{self.width}x{self.height}")
         self.minsize(self.width, self.height)
