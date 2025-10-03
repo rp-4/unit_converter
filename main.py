@@ -11,9 +11,10 @@ from customtkinter import CTkFrame as Frame
 import webbrowser
 import inspect
 import re
-import os
+import os, sys
 import pyperclip
 from CTkToolTip import *
+import math
 
 # import local files
 from _logging import _log
@@ -22,6 +23,8 @@ from _logging import _log
 class MyTabView(customtkinter.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+
+        
 
         # create tabs
         self.tab1 = "Converter"
@@ -44,33 +47,37 @@ class MyTabView(customtkinter.CTkTabview):
 
         ''' frame for input box '''
         self.frame_t1_02 = Frame(master=self.frame_t1_0, fg_color='transparent', width=400, height=40)
-        self.frame_t1_02.pack(padx=(0,0), pady=(5,0), expand=False, fill=customtkinter.BOTH)
+        self.frame_t1_02.pack(padx=(0,0), pady=(15,0), expand=False, fill=customtkinter.BOTH)
 
         ''' frame for buttons '''
         self.frame_t1_03 = Frame(master=self.frame_t1_0, fg_color='transparent', width=400)
-        self.frame_t1_03.pack(padx=(0,0), pady=(5,5), expand=False, fill=customtkinter.BOTH)
+        self.frame_t1_03.pack(padx=(0,0), pady=(15,5), expand=False, fill=customtkinter.BOTH)
 
         ''' frame for output '''
         self.frame_t1_04 = Frame(master=self.frame_t1_0, fg_color='transparent', width=200, height=40)
-        self.frame_t1_04.pack(padx=(0,0), pady=(5,5), expand=False, fill=customtkinter.BOTH)
+        self.frame_t1_04.pack(padx=(0,0), pady=(15,5), expand=False, fill=customtkinter.BOTH)
 
         ''' frame for inch output '''
         self.frame_t1_041 = Frame(master=self.frame_t1_04, fg_color='transparent', width=400, height=40)
-        self.frame_t1_041.pack(padx=(0,0), pady=(5,0), expand=True, fill=customtkinter.BOTH)
+        self.frame_t1_041.pack(padx=(0,0), pady=(0,0), expand=True, fill=customtkinter.BOTH)
 
         ''' frame for mm output '''
         self.frame_t1_042 = Frame(master=self.frame_t1_04, fg_color='transparent', width=400, height=40)
-        self.frame_t1_042.pack(padx=(0,0), pady=(5,0), expand=True, fill=customtkinter.BOTH)
+        self.frame_t1_042.pack(padx=(0,0), pady=(15,0), expand=True, fill=customtkinter.BOTH)
 
 
 #####################################################################################################################################
         ''' tab 2 frames '''
         ''' main frame on tab 2 where everything goes '''
         self.frame_t2_0 = Frame(master=self.tab(self.tab2), fg_color="transparent")
-        self.frame_t2_0.pack(padx=(10,10), pady=(10,0), side=customtkinter.TOP, expand=True, fill=customtkinter.BOTH)
+        self.frame_t2_0.pack(padx=(10,10), pady=(0,0), side=customtkinter.TOP, expand=True, fill=customtkinter.BOTH)
 
 
-        ''' first frame where Nominal input box goes '''
+        ''' first frame Hole and Shaft labels go '''
+        self.frame_t2_00 = Frame(master=self.frame_t2_0, fg_color='transparent', height=50)
+        self.frame_t2_00.pack(padx=(0,0), pady=(0,5), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+        ''' frame where Nominal input box goes '''
         self.frame_t2_01 = Frame(master=self.frame_t2_0, fg_color='transparent', height=50)
         self.frame_t2_01.pack(padx=(0,0), pady=(0,5), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
@@ -104,17 +111,33 @@ class MyTabView(customtkinter.CTkTabview):
 
         ''' frame for Gap when Both @ MMC tolerance result '''
         self.frame_t2_08 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
-        self.frame_t2_08.pack(padx=(0,0), pady=(15,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+        self.frame_t2_08.pack(padx=(0,0), pady=(10,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
 
         ''' frame for Gap when Both @ LMC tolerance result '''
         self.frame_t2_09 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
         self.frame_t2_09.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+
+        ''' frame for RSS Gap when Both @ MMC tolerance result '''
+        self.frame_t2_10 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
+        self.frame_t2_10.pack(padx=(0,0), pady=(10,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
+
+        ''' frame for RSS Gap when Both @ LMC tolerance result '''
+        self.frame_t2_11 = Frame(master=self.frame_t2_0, fg_color='transparent', width=400, height=40)
+        self.frame_t2_11.pack(padx=(0,0), pady=(5,0), side=customtkinter.TOP, expand=False, fill=customtkinter.BOTH)
  
 
 
 
 
         ''' tab 2 contetns '''
+        
+        ''' Hole and Shalf labels '''
+        self.nominal_info_lbl = customtkinter.CTkLabel(master=self.frame_t2_00, text="            HOLE          |       SHAFT ", text_color = "Gray", font=("",20))
+        self.nominal_info_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0) 
+
+
+
         ''' inputs for nominals '''
         self.nominal_lbl = customtkinter.CTkLabel(master=self.frame_t2_01, text="NOML", text_color = "Gray", font=("",20))
         self.nominal_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
@@ -229,11 +252,28 @@ class MyTabView(customtkinter.CTkTabview):
 
 
         ''' Gap when both are @ LMC tolerance result '''
-        self.both_at_LMC_lbl = customtkinter.CTkLabel(master=self.frame_t2_09, text="Clearance @ MMC", text_color = "Gray", font=("",20))
+        self.both_at_LMC_lbl = customtkinter.CTkLabel(master=self.frame_t2_09, text="Clearance @ LMC", text_color = "Gray", font=("",20))
         self.both_at_LMC_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
         self.both_at_LMC_op = customtkinter.CTkLabel(master=self.frame_t2_09, text=0, text_color = "#c3c3c3", font=("",30))
         self.both_at_LMC_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+
+
+        ''' RSS Gap when both are @ MMC tolerance result '''
+        self.RSS_at_MMC_lbl = customtkinter.CTkLabel(master=self.frame_t2_10, text="RSS Clearnc @ MMC", text_color = "Gray", font=("",20))
+        self.RSS_at_MMC_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.RSS_at_MMC_op = customtkinter.CTkLabel(master=self.frame_t2_10, text=0, text_color = "#c3c3c3", font=("",30))
+        self.RSS_at_MMC_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+
+        ''' RSS Gap when both are @ LMC tolerance result '''
+        self.RSS_at_LMC_lbl = customtkinter.CTkLabel(master=self.frame_t2_11, text="RSS Clearnc @ LMC", text_color = "Gray", font=("",20))
+        self.RSS_at_LMC_lbl.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
+
+        self.RSS_at_LMC_op = customtkinter.CTkLabel(master=self.frame_t2_11, text=0, text_color = "#c3c3c3", font=("",30))
+        self.RSS_at_LMC_op.pack(side="left", fill="both", expand=True, padx=(5,5), pady=0)
 
 
 
@@ -254,7 +294,7 @@ class MyTabView(customtkinter.CTkTabview):
 
         
         ''' convert button '''
-        self.convert_btn = customtkinter.CTkButton(master=self.frame_t1_03, text="Convert", command=lambda: self.convert_unit(event='e'), 
+        self.convert_btn = customtkinter.CTkButton(master=self.frame_t1_03, text="Convert", command=lambda: self.convert_unit(), 
                                                    width=170, height=40, font=("", 30))
         self.convert_btn.pack(padx=(0,5), pady=(0,0), side=customtkinter.LEFT)
 
@@ -291,11 +331,6 @@ class MyTabView(customtkinter.CTkTabview):
         self.mm_op.pack(padx=(0,5), pady=(0,0), side=customtkinter.LEFT,)
 
 
-        
-
-        ''' binding input box to enter key '''
-        self.input_box.bind('<Return>', self.convert_unit)
-
 
         ''' declaring global variables '''
         self.inch_op_number = 0
@@ -306,8 +341,7 @@ class MyTabView(customtkinter.CTkTabview):
     ''' initially setting default values '''
     def initial_setting(self):
         print("initial settings")
-        # self.input_plus_tol_shaft.insert(0, string=0)
-        # # self.input_plus_tol_hole.insert((0, "0"))
+
 
     
     ''' validate the entry to make sure it is numbers '''
@@ -319,32 +353,37 @@ class MyTabView(customtkinter.CTkTabview):
 
 
     def selected_tolerance(self):
-
+        _log("i", f"IN: {inspect.stack()[0][3]}")
         if self.tol_selector_var.get() == 1:
             self.plus_tolerance_lbl.configure(text="±TOL")
             self.min_tolerance_lbl.configure(text="        ")
             self.input_min_tol_shaft.configure(state="disabled", border_color = "#913030")
             self.input_min_tol_hole.configure(state="disabled", border_color = "#913030")
+            _log("i", f"IN: {inspect.stack()[0][3]}: Symmetry tolerance method was selected")
         elif self.tol_selector_var.get() == 2:
             self.plus_tolerance_lbl.configure(text="+TOL")
             self.min_tolerance_lbl.configure(text="-TOL")
             self.input_min_tol_shaft.configure(state="normal", border_color = "green")
             self.input_min_tol_hole.configure(state="normal", border_color = "green")
+            _log("i", f"IN: {inspect.stack()[0][3]}: Bilateral tolerance method was selected")
 
 
     def tol_calculations(self):
-
+        _log("i", f"IN: {inspect.stack()[0][3]}")
         # print(self.input_plus_tol_shaft.get(), type(self.input_plus_tol_shaft.get()))
         # enter 0 initially to tolerance input boxes  
         # check if it is symmetry or biletaral tolerance and then proceed 
         if self.tol_selector_var.get() == 1:
+            _log("i", f"IN: {inspect.stack()[0][3]}: Symmetry tolerance calculation was started")
             self.get_values(tol_type=1)
             self.sym_tol_calculations()
         elif self.tol_selector_var.get() == 2:
+            _log("i", f"IN: {inspect.stack()[0][3]}: Bilateral tolerance calculation was started")
             self.get_values(tol_type=2)
             self.bi_tol_calculations()
 
     def get_values(self, tol_type):
+        _log("i", f"IN: {inspect.stack()[0][3]}")
         try:
             self.shaft_nominal = float(self.shaft_nominal_box.get())
         except ValueError as e:
@@ -359,40 +398,43 @@ class MyTabView(customtkinter.CTkTabview):
         
         
         try:
-            self.max_shaft = float(self.input_plus_tol_shaft.get())
+            self.max_shaft_tol = float(self.input_plus_tol_shaft.get())
         except ValueError as e:
             # show error message
-            self.max_shaft = 0
+            self.max_shaft_tol = 0
 
         try:
-            self.max_hole = float(self.input_plus_tol_hole.get())
+            self.max_hole_tol = float(self.input_plus_tol_hole.get())
         except ValueError as e:
             # show error message
-            self.max_hole = 0
+            self.max_hole_tol = 0
 
         if tol_type == 2:
             try:
-                self.min_shaft = float(self.input_min_tol_shaft.get())
+                self.min_shaft_tol = float(self.input_min_tol_shaft.get())
             except ValueError as e:
                 # show error message
-                self.min_shaft = 0
+                self.min_shaft_tol = 0
 
             try:
-                self.min_hole = float(self.input_min_tol_hole.get())
+                self.min_hole_tol = float(self.input_min_tol_hole.get())
             except ValueError as e:
                 # show error message
-                self.min_hole = 0       
+                self.min_hole_tol = 0    
+
+        _log("i", f"IN: {inspect.stack()[0][3]}: All values were defined")   
 
     
     def bi_tol_calculations(self):
+        _log("i", f"IN: {inspect.stack()[0][3]}")
 
         # print(self.input_plus_tol_shaft.get(), type(self.input_plus_tol_shaft.get()))
 
-        self.shaft_at_max = round(self.shaft_nominal + self.max_shaft, 4)
-        self.hole_at_max = round(self.hole_nominal + self.max_hole, 4)
+        self.shaft_at_max = round(self.shaft_nominal + self.max_shaft_tol, 4)
+        self.hole_at_max = round(self.hole_nominal + self.max_hole_tol, 4)
 
-        self.shaft_at_min = round(self.shaft_nominal - self.min_shaft, 4)
-        self.hole_at_min = round(self.hole_nominal - self.min_hole, 4)
+        self.shaft_at_min = round(self.shaft_nominal - self.min_shaft_tol, 4)
+        self.hole_at_min = round(self.hole_nominal - self.min_hole_tol, 4)
 
         self.max_shaft_op.configure(text = self.shaft_at_max)
         self.max_hole_op.configure(text = self.hole_at_max)
@@ -413,22 +455,38 @@ class MyTabView(customtkinter.CTkTabview):
         elif self.both_at_LMC_var >= 0:
             self.both_at_LMC_op.configure(text = self.both_at_LMC_var, text_color = "green")
         
-        # print("MAX_1", self.shaft_at_max)
-        # print("MAX_2", self.hole_at_max)
 
-        # print("MIN_1", self.shaft_at_min)
-        # print("MIN_2", self.hole_at_min)
+        ''' RSS Tolerance calculations for bilateral '''
+        self.nominal_clear = self.hole_nominal - self.shaft_nominal
+        self.rss_min = math.sqrt((abs(self.min_hole_tol))**2 + (self.max_shaft_tol)**2)
+        self.rss_max  = math.sqrt((self.max_hole_tol)**2 + (abs(self.min_shaft_tol))**2)
+
+        self.rss_MMC = round(self.nominal_clear - self.rss_min, 4)
+        self.rss_LMC = round(self.nominal_clear + self.rss_max, 4)
+
+        if self.rss_MMC < 0:
+            self.RSS_at_MMC_op.configure(text = self.rss_MMC, text_color = "#AA3E3E")
+        elif self.rss_MMC >= 0:
+            self.RSS_at_MMC_op.configure(text = self.rss_MMC, text_color = "light blue")
+
+        if self.rss_LMC < 0:
+            self.RSS_at_LMC_op.configure(text = self.rss_LMC, text_color = "#AA3E3E")
+        elif self.rss_LMC >= 0:
+            self.RSS_at_LMC_op.configure(text = self.rss_LMC, text_color = "light blue")
+
+        _log("i", f"IN: {inspect.stack()[0][3]}: Bilateral tolerance calculation was done")
 
     
     def sym_tol_calculations(self):
+        _log("i", f"IN: {inspect.stack()[0][3]}")
 
         # print(self.input_plus_tol_shaft.get(), type(self.input_plus_tol_shaft.get()))
 
-        self.shaft_at_max = round(self.shaft_nominal + self.max_shaft, 4)
-        self.hole_at_max = round(self.hole_nominal + self.max_hole, 4)
+        self.shaft_at_max = round(self.shaft_nominal + self.max_shaft_tol, 4)
+        self.hole_at_max = round(self.hole_nominal + self.max_hole_tol, 4)
 
-        self.shaft_at_min = round(self.shaft_nominal - self.max_shaft, 4)
-        self.hole_at_min = round(self.hole_nominal - self.max_hole, 4)
+        self.shaft_at_min = round(self.shaft_nominal - self.max_shaft_tol, 4)
+        self.hole_at_min = round(self.hole_nominal - self.max_hole_tol, 4)
 
         self.max_shaft_op.configure(text = self.shaft_at_max)
         self.max_hole_op.configure(text = self.hole_at_max)
@@ -450,20 +508,32 @@ class MyTabView(customtkinter.CTkTabview):
         elif self.both_at_LMC_var >= 0:
             self.both_at_LMC_op.configure(text = self.both_at_LMC_var, text_color = "green")
 
-        # print("SYM MAX_1", self.shaft_at_max)
-        # print("SYM MAX_2", self.hole_at_max)
 
-        # print("SYM MIN_1", self.shaft_at_min)
-        # print("SYM MIN_2", self.hole_at_min)
-       
+        ''' RSS Tolerance calculations for symmety '''
+        self.nominal_clear = self.hole_nominal - self.shaft_nominal
+        self.rss_sym = math.sqrt((abs(self.max_hole_tol))**2 + (self.max_shaft_tol)**2)
+
+        self.rss_MMC = round(self.nominal_clear - self.rss_sym, 4)
+        self.rss_LMC = round(self.nominal_clear + self.rss_sym, 4)
 
 
-        
-        
+        if self.rss_MMC < 0:
+            self.RSS_at_MMC_op.configure(text = self.rss_MMC, text_color = "#AA3E3E")
+        elif self.rss_MMC >= 0:
+            self.RSS_at_MMC_op.configure(text = self.rss_MMC, text_color = "light blue")
+
+        if self.rss_LMC < 0:
+            self.RSS_at_LMC_op.configure(text = self.rss_LMC, text_color = "#AA3E3E")
+        elif self.rss_LMC >= 0:
+            self.RSS_at_LMC_op.configure(text = self.rss_LMC, text_color = "light blue")
+
+        _log("i", f"IN: {inspect.stack()[0][3]}: Symmetry tolerance calculation was done")
+
+
             
 
-    def convert_unit(self, event):
-        _log("i", f"IN: {inspect.stack()[0][3]}: Unit conversion by enter key")
+    def convert_unit(self):
+        _log("i", f"IN: {inspect.stack()[0][3]}: Unit was converted")
         try:
             input_number = float(self.input_box.get())
         except ValueError as e:
@@ -473,22 +543,24 @@ class MyTabView(customtkinter.CTkTabview):
         self.mm_op_number = round(input_number * 25.4, 4)
         self.op_numbers(inch=self.inch_op_number, mm=self.mm_op_number)
 
-    def convert_unit_btn(self):
-        _log("i", f"IN: {inspect.stack()[0][3]}: Unit conversion by button")
-        self.convert_unit(event='e')
 
 
     def copy_to_clipboard(self, unit):
+        _log("i", f"IN: {inspect.stack()[0][3]}")
         if unit == "inch":
             pyperclip.copy(self.inch_op_number)
+            _log("i", f"IN: {inspect.stack()[0][3]}: Inch output was copied")
         elif unit == "mm":
             pyperclip.copy(self.mm_op_number)
+            _log("i", f"IN: {inspect.stack()[0][3]}: MM output was copied")
    
     def clear_all(self):
         _log("i", f"IN: {inspect.stack()[0][3]}")
         self.input_box.delete(0, customtkinter.END)
+        _log("i", f"IN: {inspect.stack()[0][3]}: Cleared")
     
     def op_numbers(self, inch="0", mm="0", color = "white"):
+        _log("i", f"IN: {inspect.stack()[0][3]}")
         self.inch_op.configure(text=inch,  text_color= color)
         self.mm_op.configure(text=mm,  text_color= color)
         _log("i", f"IN: {inspect.stack()[0][3]}: Number conversion")
@@ -503,46 +575,62 @@ class App(customtkinter.CTk):
         customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
         self.width = 400
-        self.height = 550
+        self.height = 620
         
         self.geometry(f"{self.width}x{self.height}")
         self.minsize(self.width, self.height)
         self.title("Unit Converter v1.0.0")
         self.wm_attributes("-topmost", True) # always on-top configuration
         self.resizable(False, False)
-        self.iconbitmap('src/logo.ico')
+        # self.iconbitmap("src\\logo.ico")
+        self.iconbitmap(self.resource_path("src/logo.ico"))
         self.grid_rowconfigure(0, minsize=200, weight=1)
         self.grid_columnconfigure(0,weight=0, pad=0)
         self.grid_columnconfigure(0, minsize=20, weight=1)
 
         
-        
-
-        
-
-        
+               
         self.tab_view = MyTabView(master=self, fg_color="transparent")
         self.tab_view.grid(row=0, column=0, sticky = "NWES")
 
 
+        ''' binding input box to enter key '''
+        self.bind('<Return>', self.handle_return_key)
 
-        '''' developer's note '''
-        
-        
+
+
+        '''' developer's note '''        
         self.madeBy = customtkinter.CTkLabel(master=self, text="Developed by Rinkesh Patel with 💙 for you !!")
         self.madeBy.grid(row=10, column=0, columnspan=4, pady=5)
 
         self.madeBy.bind("<Button-1>", lambda e: self.openWebsite("https://rinkeshpatel.com/"))
 
+
     def openWebsite(self,url):
         _log("i", f"IN: {inspect.stack()[0][3]}: Website accessed: {url}")
         webbrowser.open_new(url)
 
-        
 
-        
+    def handle_return_key(self, event):
+        _log("i", f"IN: {inspect.stack()[0][3]}: Enter Key pressed")
 
-    
+        if self.tab_view.get() == "Converter":
+            _log("i", f"IN: {inspect.stack()[0][3]}: Converter was used using Enter Key")
+            self.tab_view.convert_unit()
+        elif self.tab_view.get() == "Stackup Calc":
+            _log("i", f"IN: {inspect.stack()[0][3]}: Stackup Calc was used using Enter Key")
+            self.tab_view.tol_calculations()
+
+
+    def resource_path(self, relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
+
+   
 
     
 if __name__ == "__main__":

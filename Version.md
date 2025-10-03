@@ -37,4 +37,15 @@ Unit Converter Commit 9 (Version: 1.0.0):
         - Added MAX & MIN condition calculations
         - Added UI & code for clearance when both hole & shaft are at MMC and LMC
         - If there is interference at MMC, the font will be red; otherwise, it will be green
+
+Unit Converter Commit 10 (Version: 1.0.0):
+    - Minor changes
+        - Typing mistakes
+        - logger lines were added
+    - Features:
+        - Added RSS Gap when both at MMC and LMC
+        - Calculate unit conversion and tolerance by pressing Enter key as well
+    - Publication
+        - Version 1.0.0 was published
+        - Windows OS portable package was released
     

@@ -6,24 +6,19 @@ Unit converter for general purpose
  - Converted number will be round to 4 digit after decimal
  - The software is for mechanical designer, machinist or whoever is working in similar industry where frequent unit conversion is required on daily and regular basis
 
+
 <br>
 
 ![alt text](misc/image_04.png) 
 
 <br> 
 
-![alt text](misc/image_05.png)
+![alt text](misc/image_09.png)
 
 <br>
 
-![alt text](misc/image_06.png)
+![alt text](misc/image_10.png)
 
-<br>
 
-![alt text](misc/image_07.png)
-
-<br>
-
-![alt text](misc/image_08.png)
 
 
